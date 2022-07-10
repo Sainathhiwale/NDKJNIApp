@@ -1,0 +1,156 @@
+#Create the native c++ NDK project for JNI function calling
+step
+1.clicked on File -> New -> New Project -> Native c++ - project is created
+2. Project structure is -app
+                        -src
+                        -main
+                        -cpp - contains the c++file and call the JNI method into it - native-lib.cpp
+                        -java - create jni native method and pass parameter to c++ file MainActivity.java
+                        -res
+
+                        Reference videos and tutorial
+                        https://www.teachmeidea.com/2018/09/how-to-build-jni-app-in-android.html
+                        https://www.youtube.com/watch?v=mcJyYPIEsgw
+                        channel id youtube -TeachMeIDEA
+
+                        complete process has define are -
+
+                        1 - Open Android Studio
+                        2 - Click "Start a new Android Studio Project"
+                        3 - Name your app whatever you want
+                        4 - Check "Include C++ Support"
+                        5- Click "Next"
+                        6 - "Phone and Tablet" helps you to set minimum Android Version, you can change it but leave the default value and click "Next"
+                        7 - Choose Empty Activity and click "Next"
+                        8 - Name your activity class or leave the default name and click "Finish"
+                        9 - Wait until finishes
+                        10 - Under project directory go to app > res > layout > activity_main.xml and write:
+
+
+                        <?xml version="1.0" encoding="utf-8"?>
+                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        xmlns:tools="http://schemas.android.com/tools"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        tools:context=".MainActivity">
+
+
+                        <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+
+                        <TextView
+                        android:id="@+id/txtViewID"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:gravity="center"
+                        android:text="........"/>
+
+
+                        <EditText
+                        android:id="@+id/txtInputID"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:hint="type.."/>
+
+
+                        <Button
+                        android:id="@+id/enterBtnID"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Enter"/>
+
+                        </LinearLayout>
+
+                        </LinearLayout>
+
+
+
+
+                        11 - Under project directory go to app > java> com.android.app > MainActivity and write:
+
+                        package com.android.jniapp;
+
+                        import android.app.Activity;
+                        import android.os.Bundle;
+                        import android.view.View;
+                        import android.widget.Button;
+                        import android.widget.EditText;
+                        import android.widget.TextView;
+
+                        public class MainActivity extends Activity implements View.OnClickListener {
+
+                        // Used to load the 'native-lib' library on application startup.
+                        static {
+                        System.loadLibrary("native-lib");
+                        }
+
+                        private TextView txtView;
+                        private EditText txtInput;
+                        private Button enterBtn;
+
+                        @Override
+                        protected void onCreate(Bundle savedInstanceState) {
+                        super.onCreate(savedInstanceState);
+                        setContentView(R.layout.activity_main);
+
+
+                        txtView = findViewById(R.id.txtViewID);
+                        txtInput = findViewById(R.id.txtInputID);
+                        enterBtn = findViewById(R.id.enterBtnID);
+                        enterBtn.setOnClickListener(this);
+
+
+                        }
+
+                        public native int getTxtLen(String txt);
+
+                        private void enterText(){
+                        String txt = txtInput.getText().toString();
+                        int txtLen = getTxtLen(txt);
+                        txtView.setText("Text Length: " + txtLen);
+                        }
+
+
+                        @Override
+                        public void onClick(View view) {
+                        if (view == enterBtn){
+                        enterText();
+                        }
+                        }
+                        }
+
+
+
+
+
+                        12 - Under project directory go to app > cpp> native-lib.cpp and write:
+
+
+                        #include <jni.h>
+                        #include <string>
+                        #include <string.h>
+
+                        extern "C"
+                        JNIEXPORT jint JNICALL
+                        Java_com_android_jniapp_MainActivity_getTxtLen(JNIEnv *env, jobject instance, jstring txt_) {
+                        const char *txt = env->GetStringUTFChars(txt_, 0);
+                        int len = strlen(txt);
+
+
+                        return len;
+                        }
+
+                        13 - Click "Run" button
+                        14 - Under "Connected Devices" choose your device and click "OK"
+                        15 - Wait until Android Studio builds and installs the app into your phone
+
+
+
+                        16 - Congratulations, you build your first Android App
+
+
